@@ -2,7 +2,7 @@
   var success = 0;
   var stringify = (function () {
     var tab = '    ';
-    var urlExpr = /^((http|ftp|https):\/\/)(([a-zA-Z0-9\._-]+\.[a-zA-Z]{2,6})|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,4})*(\/[\w\?\#\%\/\.\=\&\!-]*)?$/;
+    var urlExpr = /^((http|ftp|https):\/\/)(([a-zA-Z0-9\._-]+\.[a-zA-Z]{2,6})|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,4})*([\w\?\#\%\/\.\=\&\!-]*)?$/;
     var buildPath = function (root, prop) {
       if (/(\-\.)/.test(prop)) {
         return root + '["' + prop.replacae(/"/g, '\\"') + '"]';
@@ -35,7 +35,7 @@
         if (urlExpr.test(item))
           return '<a href="' + item + '" target="_blank" title="' + path + '" class="link">' + item + '</a>';
         else
-          return '<span class="string" title="' + path + '">"' + item.replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"</span>';
+          return '<span class="string" title="' + path + '">"' + item.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n').replace(/\r/g, '\\r') + '"</span>';
       } else {
         return '<span class="null">' + item + '</span>';
       }
@@ -48,7 +48,7 @@
       }
     };
     return function (json) {
-      return objLoop(json, 0, '<root>');
+      return (Array.isArray(json) ? arrLoop : objLoop)(json, 0, '<root>');
     };
   })();
   if (document.body.childNodes.length == 1) {
